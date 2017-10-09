@@ -26,3 +26,20 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.slider {
+}
+
+.open {
+  max-height: 500px;
+}
+
+.closed {
+  max-height: 0;
+}
+
+li textarea.form-control {
+  border: 0;
+  width: 95%;
+  display: inline-block;
+}
