@@ -13,6 +13,18 @@ const SECONDS_PER_SUBMIT = 25
 
 const scrollToBottom = () => window.scrollTo(0,document.body.scrollHeight);
 
+const buildNumberText = number => `${number}. `
+
+const appendNumber = (text, number) => {
+  const numberText = buildNumberText(number)
+  return `${numberText}${text.substring(numberText.length, text.length)}`
+}
+
+const stripNumber = (text, number) => {
+  const numberText = buildNumberText(number)
+  return text.substring(numberText.length, text.length)
+}
+
 class App extends Component {
   state = {
     topic: getTopic(),
@@ -24,6 +36,7 @@ class App extends Component {
 
   handleStoryLineChange= this.handleStoryLineChange.bind(this)
   handleStoryLineSubmit= this.handleStoryLineSubmit.bind(this)
+  handleStoryLineFocus= this.handleStoryLineFocus.bind(this)
 
   componentDidMount() {
     this.startNextStoryPrompt()
@@ -32,9 +45,14 @@ class App extends Component {
     }, 500)
   }
 
+  textHasBeenEntered() {
+    const numberText = buildNumberText(this.state.storyLines.length)
+    return this.state.currentStoryLine.length > numberText.length
+  }
+
   handleStoryLineChange(e) {
     this.setState({
-      currentStoryLine: e.target.value
+      currentStoryLine: appendNumber(e.target.value, this.state.storyLines.length + 1)
     })
   }
 
@@ -42,7 +60,7 @@ class App extends Component {
     let storyLines
 
     if (this.state.currentStoryLine !== '')
-      storyLines = [...this.state.storyLines, this.state.currentStoryLine]
+      storyLines = [...this.state.storyLines, stripNumber(this.state.currentStoryLine, this.state.storyLines.length)]
     else
       storyLines = this.state.storyLines
 
@@ -52,15 +70,21 @@ class App extends Component {
       storyLines,
       currentStoryLine: '',
       submitted: true,
-      secondsLeftToSubmit: null
+      secondsLeftToSubmit: null,
+      showNewStoryLine: false
     })
 
     window.setTimeout(() => {
+      this.setState({
+        showNewStoryLine: true
+      })
+    }, 100)
+
+    window.setTimeout(() => {
       this.startNextStoryPrompt()
+      scrollToBottom()
     }, POST_SUBMIT_DELAY)
 
-
-    scrollToBottom()
 
     window.localStorage.setItem(this.state.topic, JSON.stringify(storyLines))
   }
@@ -87,6 +111,13 @@ class App extends Component {
     })
   }
 
+  handleStoryLineFocus() {
+    if (this.state.currentStoryLine === '')
+      this.setState({
+        currentStoryLine: `${this.state.storyLines.length + 1}. `
+      })
+  }
+
   render() {
     return (
       <div className="App">
@@ -100,45 +131,59 @@ class App extends Component {
           </h3>
           <ListGroup>
             {this.state.storyLines.map((storyLine, i) => {
-              if (i === this.state.storyLines.length - 1 || this.state.showAll)
-                return <ListGroupItem bsStyle='info'>{`${i + 1}. ${storyLine}`}</ListGroupItem>
-              return <ListGroupItem>{`${i + 1}.......`}</ListGroupItem>
+              if (this.state.showAll)
+                return <li className='list-group-item'>{`${i + 1}. ${storyLine}`}</li>
+              if (i === this.state.storyLines.length - 1)
+                return (
+                  <li
+                    key={i}
+                    className={`list-group-item list-group-item-info slider ${(cx({open: this.state.showNewStoryLine}))}`}>
+                    {`${i + 1}. ${storyLine}`}
+                  </li>
+                )
+              return <li className='list-group-item' key={i}>{`${i + 1}. ......`}</li>
             })}
-            <ListGroupItem>
+            <li className='list-group-item'>
               <form>
                 <FormGroup controlId='story_line'>
-                  <span style={{display: 'inline-block',  position: 'relative', top: 0}}>{`${this.state.storyLines.length + 1}.`}</span>
-                  <textarea autofocus
-                    value={this.state.currentStoryLine}
-                    placeholder={`Continue the story for the future of ${this.state.topic}`}
-                    className='form-control'
-                    onChange={this.handleStoryLineChange}
-                    rows='3'
-                    disabled={this.state.submitted}
-                  />
+                  {!this.state.submitted && (
+                    <textarea autoFocus
+                      value={this.state.currentStoryLine}
+                      placeholder={`${this.state.storyLines.length + 1}. Continue the story for the future of ${this.state.topic}`}
+                      className='form-control'
+                      onChange={this.handleStoryLineChange}
+                      rows='3'
+                      onFocus={this.handleStoryLineFocus}
+                    />
+                  )}
+                  {this.state.submitted && (
+                    <div>
+                      <span className="label label-success" style={{fontSize: '100%'}}>Your line has been added to the story!</span>
+                      <br/>
+                      <br/>
+                      <span className="label label-info" style={{fontSize: '100%'}}>Please pass this back to the person behind you</span>
+                    </div>
+                  )}
                 </FormGroup>
-                <button className='btn-large btn-primary'
-                  onClick={this.handleStoryLineSubmit}
-                  disabled={this.state.currentStoryLine === ''}
-                  ref={submitButton => this.submitButton = submitButton}
-                >
-                  {`Add to the story`}
-                </button>
-                {this.state.secondsLeftToSubmit && (
-                  <span style={{padding: '6px 12px'}}>
-                    {`${this.state.secondsLeftToSubmit} seconds remaining`}
-                  </span>
+                {!this.state.submitted && (
+                  <div style={{textAlign: 'right'}}>
+                    {this.state.secondsLeftToSubmit > 0 && (
+                      <span style={{padding: '6px 12px'}}>
+                        {`${this.state.secondsLeftToSubmit} seconds remaining`}
+                      </span>
+                    )}
+                    <button className='btn btn-large btn-primary'
+                      onClick={this.handleStoryLineSubmit}
+                      disabled={!this.textHasBeenEntered()}
+                      ref={submitButton => this.submitButton = submitButton}
+                    >
+                      {`Add to the story`}
+                    </button>
+                  </div>
                 )}
               </form>
-            </ListGroupItem>
+            </li>
           </ListGroup>
-          {this.state.submitted && (
-            <div>
-              <span class="label label-success" style={{fontSize: '100%'}}>Your line has been added to the story!</span>
-              <br/>
-              <span class="label label-info" style={{fontSize: '100%'}}>Please pass this back to the person behind you</span>
-            </div>
-          )}
         </div>
       </div>
     );

@@ -1,4 +1,6 @@
+
 .App {
+  min-height: 800px;
 }
 
 .App-logo {
@@ -27,19 +29,39 @@
   to { transform: rotate(360deg); }
 }
 
-.slider {
+.list-group-item.slider {
+  overflow-y: hidden;
+  max-height: 0px; /* approximate max height */
+  padding: 0px 15px;
+
+  transition-property: all;
+  transition-duration: 1s;
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
 }
 
-.open {
-  max-height: 500px;
+.list-group-item.open {
+  max-height: 100px;
+  padding: 10px 15px;
 }
 
-.closed {
+.list-group-item.closed {
   max-height: 0;
 }
 
 li textarea.form-control {
   border: 0;
-  width: 95%;
   display: inline-block;
+  margin-left: -15px;
+  margin-top: -10px;
+  padding-left: 15px;
+}
+
+li textarea.form-control:focus {
+  border: 0;
+  outline: 0;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.list-group-item {
 }
