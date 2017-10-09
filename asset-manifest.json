@@ -1,7 +1,12 @@
 {
-  "main.css": "static/css/main.5fb8b5ee.css",
-  "main.css.map": "static/css/main.5fb8b5ee.css.map",
-  "main.js": "static/js/main.3ef74d1b.js",
-  "main.js.map": "static/js/main.3ef74d1b.js.map",
-  "static/media/logo.svg": "static/media/logo.5d5d9eef.svg"
+  "main.css": "static/css/main.7c18fe7f.css",
+  "main.css.map": "static/css/main.7c18fe7f.css.map",
+  "main.js": "static/js/main.10f3c945.js",
+  "main.js.map": "static/js/main.10f3c945.js.map",
+  "static/media/culture-and-morals.jpg": "static/media/culture-and-morals.6845f79b.jpg",
+  "static/media/economics-and-money.jpg": "static/media/economics-and-money.532f2c13.jpg",
+  "static/media/environment-and-travel.jpg": "static/media/environment-and-travel.e3a38bc6.jpg",
+  "static/media/logo.svg": "static/media/logo.5d5d9eef.svg",
+  "static/media/politics-and-goverment.jpg": "static/media/politics-and-goverment.fd03358f.jpg",
+  "static/media/relationship-and-gender.jpg": "static/media/relationship-and-gender.48503683.jpg"
 }
