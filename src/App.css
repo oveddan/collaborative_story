@@ -10,42 +10,41 @@
 
 .App-header {
   background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+  height: 280px;
+  width: 100%;
   text-align: center;
+  position: fixed;
+  padding: 0;
+  overflow: hidden;
+  z-index: 10;
 }
 
-.App-title {
-  font-size: 1.5em;
+.App-header img {
+  width: 100%;
 }
 
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.App main.container {
+  padding-top: 300px;
 }
 
 .list-group-item.slider {
-  overflow-y: hidden;
-  max-height: 0px; /* approximate max height */
-  padding: 0px 15px;
+  min-height: 0px;
 
   transition-property: all;
-  transition-duration: 1s;
+  transition-duration: 2s;
   transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
 }
 
-.list-group-item.open {
-  max-height: 100px;
-  padding: 10px 15px;
+.list-group-item.slider.expanded {
+  min-height: 116px; /* approximate max height */
 }
 
-.list-group-item.closed {
-  max-height: 0;
+.list-group-item.slider[!not=.expanded]{
+  min-height: 0px; /* approximate max height */
+}
+
+.list-group-item {
+  padding: 10px 15px;
 }
 
 li textarea.form-control {
