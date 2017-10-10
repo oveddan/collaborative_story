@@ -1,3 +1,6 @@
+* h1, h2, h3, p, body {
+  font-family: 'Roboto', sans-serif;
+}
 
 .App {
   min-height: 800px;
@@ -47,6 +50,15 @@
   padding: 10px 15px;
 }
 
+.list-group-item:first-child, .list-group-item:last-child {
+  border-radius: 0;
+}
+
+.list-group-item-info {
+  background-color: #DEB5E9;
+  color: black;
+}
+
 li textarea.form-control {
   border: 0;
   display: inline-block;
@@ -62,5 +74,24 @@ li textarea.form-control:focus {
           box-shadow: none;
 }
 
-.list-group-item {
+h1 a {
+  font-size: 16px;
+}
+
+.btn-primary {
+  background-color: #86369C;
+  border: 0;
+  font-weight: bold;
+}
+
+.timer {
+  font-weight: bold;
+}
+
+.timer.alert {
+  color: #D0313F;
+}
+
+.label-success {
+  background-color: #86369C;
 }

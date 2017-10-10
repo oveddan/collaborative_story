@@ -4,12 +4,26 @@ import { getParams } from './utils'
 import { FormGroup, ListGroup } from 'react-bootstrap'
 import cx from 'classnames'
 import topics from './topics'
+import ShowStory from './ShowStory'
 
 const getTopicFromQuery = () => getParams(document.location.search).topic
-const getShowAll = () => getParams(document.location.search).showAll
+const getShowStory = () => getParams(document.location.search).show === 'true'
+
+
+const saveStory = (topic, storyLines) => {
+  window.localStorage.setItem(topic, JSON.stringify(storyLines))
+}
+
+const getStory = topic => JSON.parse(window.localStorage.getItem(topic) || '[]')
+
+const hasStory = topic => getStory(topic).length > 0
+
+const removeStory = topic => {
+  window.localStorage.removeItem(topic)
+}
 
 const POST_SUBMIT_DELAY = 5 * 1000
-const SECONDS_PER_SUBMIT = 25
+const SECONDS_PER_SUBMIT = 30
 
 const scrollToBottom = () => window.scrollTo(0,document.body.scrollHeight);
 
@@ -28,8 +42,8 @@ const stripNumber = (text, number) => {
 class App extends Component {
   state = {
     topic: getTopicFromQuery(),
-    storyLines: JSON.parse(window.localStorage.getItem(getTopicFromQuery()) || '[]'),
-    showAll: getShowAll() === 'true',
+    storyLines: getStory(getTopicFromQuery()),
+    showStory: getShowStory(),
     currentStoryLine: '',
     secondsLeftToSubmit: null
   }
@@ -37,6 +51,7 @@ class App extends Component {
   handleStoryLineChange= this.handleStoryLineChange.bind(this)
   handleStoryLineSubmit= this.handleStoryLineSubmit.bind(this)
   handleStoryLineFocus= this.handleStoryLineFocus.bind(this)
+  clearStory= this.clearStory.bind(this)
 
   componentDidMount() {
     this.startNextStoryPrompt()
@@ -54,6 +69,16 @@ class App extends Component {
     this.setState({
       currentStoryLine: appendNumber(e.target.value, this.state.storyLines.length + 1)
     })
+  }
+
+  clearStory() {
+    if (window.confirm('Clear the story?')) {
+      this.setState({
+        storyLines: []
+      })
+
+      removeStory(this.state.topic)
+    }
   }
 
   handleStoryLineSubmit(e) {
@@ -87,11 +112,12 @@ class App extends Component {
     window.setTimeout(() => {
       this.startNextStoryPrompt()
       scrollToBottom()
-      this.textarea.focus()
+      if (this.textarea)
+        this.textarea.focus()
     }, POST_SUBMIT_DELAY)
 
 
-    window.localStorage.setItem(this.state.topic, JSON.stringify(storyLines))
+    saveStory(this.state.topic, storyLines)
   }
 
   startNextStoryPrompt() {
@@ -127,15 +153,26 @@ class App extends Component {
     if (!topics[this.state.topic])
       return (
         <div>
-          <div>Invalid topic. Choose a topic</div>
+          <h1>Choose a story to fill:</h1>
           <ul>
             {Object.keys(topics).map(topicKey => (
               <li><a href={`/collaborative_story?topic=${topicKey}`}>{topicKey}</a></li>
             ))}
           </ul>
+
+          <h1>Show the stories:</h1>
+          <ul>
+            {Object.keys(topics).filter(topicKey => hasStory(topicKey)).map(topicKey => (
+              <li><a href={`/collaborative_story?show=true&topic=${topicKey}`}>{topicKey}</a></li>
+            ))}
+          </ul>
+
         </div>
 
       )
+
+    if (this.state.showStory)
+      return <ShowStory storyLines={this.state.storyLines} topic={topics[this.state.topic]} clearStory={this.clearStory} />
 
     return (
       <div className="App">
@@ -145,8 +182,6 @@ class App extends Component {
         <main className='container'>
           <ListGroup>
             {this.state.storyLines.map((storyLine, i) => {
-              if (this.state.showAll)
-                return <li className='list-group-item'>{`${i + 1}. ${storyLine}`}</li>
               if (i === this.state.storyLines.length - 1)
                 return (
                   <li
@@ -173,7 +208,7 @@ class App extends Component {
                   </FormGroup>
                     <div style={{textAlign: 'right'}}>
                       {this.state.secondsLeftToSubmit > 0 && (
-                        <span style={{padding: '6px 12px'}}>
+                        <span style={{padding: '6px 12px'}} className={`timer ${cx({alert: this.state.secondsLeftToSubmit < 6})}`}>
                           {`${this.state.secondsLeftToSubmit} seconds remaining`}
                         </span>
                       )}
@@ -182,7 +217,7 @@ class App extends Component {
                         disabled={!this.textHasBeenEntered()}
                         ref={submitButton => this.submitButton = submitButton}
                       >
-                        {`Add to the story`}
+                        {`Add to the Story`}
                       </button>
                     </div>
                 </form>
