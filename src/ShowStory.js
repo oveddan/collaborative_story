@@ -11,16 +11,21 @@ export default class ShowStory extends Component {
     // document.execCommand("copy")
     // this.storyLinesHolder.select()
     // document.execCommand('copy')
-    const range = document.createRange();  
-    range.selectNode(this.storyLinesHolder);  
+    const range = document.createRange();
+    range.selectNode(this.storyLinesHolder);
     window.getSelection().addRange(range)
     document.execCommand('copy')
   }
 
   selectAll() {
-    const range = document.createRange();  
-    range.selectNode(this.storyLinesHolder);  
-    window.getSelection().addRange(range)
+    this.textarea.focus()
+    this.textarea.setSelectionRange(0, 9999)
+  }
+
+  getStoryText() {
+    return this.props.storyLines.reduce((acc, storyLine) => (
+      `${acc}${storyLine}\n`
+    ), `The story for ${this.props.topic.text}:\n\n`)
   }
 
   render() {
@@ -33,6 +38,8 @@ export default class ShowStory extends Component {
           &nbsp;|&nbsp;
           <a href='#' onClick={e => {e.preventDefault(); this.selectAll()}}>Select All</a>
         </p>
+        <textarea ref={textarea => this.textarea = textarea} rows='10' style={{width:'100%'}} value={this.getStoryText()} />
+
         <div ref={storyLinesHolder => this.storyLinesHolder = storyLinesHolder}>
           {storyLines.map((storyLine, i) => (
             <p key={i}>{storyLine}</p>

@@ -22,6 +22,7 @@
   z-index: 10;
 }
 
+
 .App-header img {
   width: 100%;
 }
@@ -29,6 +30,17 @@
 .App main.container {
   padding-top: 300px;
 }
+
+@media (min-width: 992px) {
+  .App-header {
+    height: 360px;
+  }
+
+  .App main.container {
+    padding-top: 390px;
+  }
+}
+
 
 .list-group-item.slider {
   min-height: 0px;
