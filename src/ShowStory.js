@@ -18,34 +18,27 @@ export default class ShowStory extends Component {
   }
 
   selectAll() {
-    this.textarea.focus()
-    this.textarea.setSelectionRange(0, 9999)
-  }
-
-  getStoryText() {
-    return this.props.storyLines.reduce((acc, storyLine) => (
-      `${acc}${storyLine}\n`
-    ), `The story for ${this.props.topic.text}:\n\n`)
+    const range = document.createRange();
+    range.selectNode(this.storyLinesHolder);
+    window.getSelection().addRange(range)
   }
 
   render() {
     const { topic, storyLines, clearStory } = this.props
     return (
       <div className='container show-story-lines'>
-        <h1>{`The story for ${topic.text}`} </h1>
+        <br/>
         <p>
           <a href='#' onClick={e => {e.preventDefault(); this.copyToClipboard()}}>Copy to clipboard</a>
-          &nbsp;|&nbsp;
-          <a href='#' onClick={e => {e.preventDefault(); this.selectAll()}}>Select All</a>
         </p>
-        <textarea ref={textarea => this.textarea = textarea} rows='10' style={{width:'100%'}} value={this.getStoryText()} />
-
         <div ref={storyLinesHolder => this.storyLinesHolder = storyLinesHolder}>
+          <h1>{`The Story for the Future of ${topic.text}`} </h1>
           {storyLines.map((storyLine, i) => (
             <p key={i}>{storyLine}</p>
           ))}
         </div>
 
+        <br/>
         <p>
           <a href='#' onClick={e => {e.preventDefault(); clearStory()}}>Clear the story</a>
         </p>
